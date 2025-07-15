@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Load Balancer Visualizer</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    body { font-family: sans-serif; background: #f4f4f4; padding: 2rem; }
+    button { margin-right: 10px; padding: 10px; }
+    .bot { padding: 10px; margin: 5px; background: #e0f7fa; border: 1px solid #00acc1; border-radius: 5px; }
+    #log, #bots { display: flex; flex-direction: column; gap: 5px; }
+  </style>
+</head>
+<body>
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+
+    <h1>🧠 Load Balancer Visualization</h1>
+    <button onclick="spawnBot()">➕ Spawn de conexão</button>
+  </div>
+  <!-- <button onclick="launchDdos()">🔥 Lançar DDoS (derrubar)</button> -->
+   <div style="display: flex;">
+     <div style="display: flex; flex-direction: column;">
+       <h2>📜 Logs:</h2>
+       <div id="log"></div>
+      </div>
+      <hr/>
+      <div id="bots"></div>
+    </div>  
+      
+  <script>
+    const log = (msg) => {
+      const entry = document.createElement('div');
+      entry.textContent = msg;
+      document.getElementById('log').appendChild(entry);
+    };
+
+    const socketLog = io();
+    socketLog.on('log', log);
+
+    function spawnBot() {
+      const bot = io();
+      const div = document.createElement('div');
+      div.className = 'bot';
+      div.textContent = 'Conectando...';
+      document.getElementById('bots').appendChild(div);
+
+      bot.on('assigned', (serverId) => {
+        div.textContent = `✅ Bot conectado ao ${serverId}`;
+      });
+    }
+
+    function launchDdos() {
+      fetch('/launch-ddos', { method: 'POST' })
+        .then(() => log('🚀 DDoS iniciado!'))
+        .catch((err) => log(`❌ Erro ao iniciar DDoS: ${err}`));
+    }
+  </script>
+</body>
+</html>
